@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chaos Agents — Build Finder</title>
+<style>
+:root{--bg:#0f1117;--pan:#171a23;--line:#262b38;--txt:#e6e8ee;--mut:#9aa3b2;--acc:#f0c040;--acc2:#4fd1c5;--chip:#2a2f3d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px}
+header{padding:12px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+h1{font-size:17px;margin:0}
+.tabs{display:flex;gap:4px}
+.tab{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+.tab.active{background:rgba(240,192,64,.12);border-color:var(--acc);color:var(--acc)}
+.meta{color:var(--mut);font-size:12px;margin-left:auto}
+.wrap{display:flex;gap:0;height:calc(100vh - 55px)}
+.side{width:360px;min-width:360px;border-right:1px solid var(--line);padding:16px;overflow:auto}
+.main{flex:1;overflow:auto;padding:16px 20px}
+label.sec{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin:14px 0 6px}
+.hint{color:var(--mut);font-size:11px;margin:8px 0 0;line-height:1.5}
+input[type=text],select{width:100%;background:#12141b;border:1px solid var(--line);color:var(--txt);border-radius:7px;padding:8px 10px;font-size:13px}
+#groups{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.grp{border:1px solid var(--line);border-radius:9px;padding:8px;background:#12141b;cursor:pointer}
+.grp.active{border-color:var(--acc);box-shadow:0 0 0 1px rgba(240,192,64,.35)}
+.grphead{display:flex;justify-content:space-between;align-items:center;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:6px}
+.grphead .a{color:var(--acc)}
+.grphead .del{cursor:pointer}
+.grphead .del:hover{color:#fff}
+.gchips{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.gchip{background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:4px 6px 4px 10px;font-size:12px;display:flex;align-items:center;gap:6px}
+.gchip b{color:var(--acc);font-weight:600}
+.gchip .lab{color:var(--mut);font-size:11px}
+.gchip input.mp{width:38px;background:#0f1117;border:1px solid var(--line);color:var(--txt);border-radius:5px;font-size:12px;padding:2px 3px;text-align:center}
+.gchip .x{cursor:pointer;color:var(--mut);font-size:12px}
+.gchip .x:hover{color:#fff}
+.orlab{color:var(--mut);font-size:11px;font-style:italic}
+.gempty{color:var(--mut);font-size:12px;font-style:italic}
+.addg{width:100%;margin-top:2px;background:#12141b;border:1px dashed var(--line);color:var(--acc);border-radius:8px;padding:8px;font-size:12px;cursor:pointer}
+.addg:hover{border-color:var(--acc)}
+.sklist{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:7px;margin-top:6px}
+.skrow{padding:6px 10px;cursor:pointer;border-bottom:1px solid #1c2029;font-size:13px}
+.skrow:hover{background:#1e222d}
+.skrow.on{background:rgba(240,192,64,.12);color:var(--acc)}
+.opt{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid #1c2029;font-size:13px;white-space:nowrap}
+th{position:sticky;top:0;background:var(--bg);color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;cursor:default}
+td.tot{color:var(--acc);font-weight:700}
+td.n{font-weight:600;white-space:normal;min-width:200px}
+td.eff{white-space:normal;color:var(--txt);min-width:260px}
+a.mkt{color:var(--txt);text-decoration:none;border-bottom:1px dotted #4a5164}
+a.mkt:hover{color:var(--acc2);border-bottom-color:var(--acc2)}
+.copied{color:var(--acc2);font-size:11px;margin-left:6px}
+.cls{color:var(--mut);font-size:12px}
+.pill{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;background:#0f3a34;color:#7fe3d8;margin-left:6px}
+.trig{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;background:#20263a;color:#b9c2d6}
+.trig.ko{background:#3a1f1f;color:#f0a0a0}.trig.rs{background:#1f2f3a;color:#8fd0e6}.trig.shard{background:#0f3a34;color:#7fe3d8}
+.trig.surv{background:#2a2410;color:#f0c040}.trig.boost{background:#2a1f3a;color:#c9a0f0}
+.match{color:var(--acc2);font-size:11px}
+.dep{color:#8b93a3;font-size:11px}
+.star{cursor:pointer;color:#3a4152;font-size:16px;user-select:none}
+.star.on{color:var(--acc)}
+.star:hover{color:var(--acc)}
+.empty{color:var(--mut);padding:40px 10px;text-align:center}
+.count{color:var(--mut);font-size:12px;margin-bottom:10px}
+.warn{background:#2a2410;border:1px solid #5c4a00;color:#f0c040;font-size:12px;padding:8px 10px;border-radius:7px;margin-bottom:12px}
+.catbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.catbar input{max-width:280px}.catbar select{max-width:180px}
+.chg{display:inline-block;font-size:10px;padding:1px 6px;border-radius:10px;background:#3a2410;color:#f0b040;margin-left:6px;vertical-align:middle}
+</style></head>
+<body>
+<header>
+  <h1>Chaos Agents</h1>
+  <div class="tabs">
+    <button class="tab active" data-view="finder">Build Finder</button>
+    <button class="tab" data-view="catalogue">Skills Catalogue</button>
+  </div>
+  <span class="meta" id="meta"></span>
+</header>
+
+<!-- ============ BUILD FINDER ============ -->
+<div id="viewFinder" class="wrap">
+  <div class="side">
+    <div id="refreshPanel" style="display:none;border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:6px;background:#12141b">
+      <label class="sec" style="margin-top:0">Live refresh</label>
+      <div id="rfStatus" class="hint" style="margin:0 0 7px"></div>
+      <input type="text" id="rfToken" placeholder="paste login token…" autocomplete="off">
+      <button class="addg" id="rfBtn" style="margin-top:6px;border-style:solid;color:var(--acc2);border-color:var(--acc2)">⟳ Refresh available agents</button>
+      <label style="display:flex;align-items:center;gap:6px;margin-top:7px;font-size:11px;color:var(--mut);cursor:pointer"><input type="checkbox" id="rfFull"> Full refresh — re-download every skill (use after a game patch; slow, ~15 min)</label>
+      <div id="rfBarWrap" style="display:none;height:6px;background:#0f1117;border:1px solid var(--line);border-radius:5px;margin-top:8px;overflow:hidden"><div id="rfBar" style="height:100%;width:0;background:var(--acc2);transition:width .3s"></div></div>
+      <div id="rfMsg" class="hint" style="margin:6px 0 0"></div>
+    </div>
+    <label class="sec">Requirements — agent must satisfy every row</label>
+    <div id="groups"></div>
+    <button class="addg" id="addg">＋ Add another requirement (AND)</button>
+    <input type="text" id="search" placeholder="search skills…" autocomplete="off" style="margin-top:10px">
+    <div class="sklist" id="sklist"></div>
+    <p class="hint">Each <b>row</b> is a separate must-have. Put two or more skills in the <i>same</i> row to mean <b>“any one of these”</b> (or). Click a skill to add it to the <b>highlighted</b> row.<br>
+    The <b>≤</b> box requires a skill at that column-depth <i>or shallower</i> (1–6); blank = any depth.<br>
+    Click the <b>★</b> next to an agent to favorite it (saved between sessions). Click an <b>agent name</b> to open it on the market + copy the name.</p>
+
+    <label class="sec">Filters</label>
+    <div class="opt"><input type="checkbox" id="favOnly"><label for="favOnly">★ Favorites only <span id="favCount" style="color:var(--acc)"></span></label></div>
+    <div class="opt"><input type="checkbox" id="availOnly"><label for="availOnly">Available agents only</label></div>
+    <select id="classFilter"><option value="">Any class</option></select>
+    <select id="elemFilter" style="margin-top:8px"><option value="">Any element</option></select>
+  </div>
+  <div class="main">
+    <div class="warn" id="warn" style="display:none"></div>
+    <div class="count" id="count"></div>
+    <table id="tbl"><thead></thead><tbody></tbody></table>
+    <div class="empty" id="empty">Add one or more requirement rows on the left to find agents — or tick “★ Favorites only” to see your saved agents.</div>
+  </div>
+</div>
+
+<!-- ============ SKILLS CATALOGUE ============ -->
+<div id="viewCatalogue" style="display:none;padding:16px 20px;height:calc(100vh - 55px);overflow:auto">
+  <div class="catbar">
+    <input type="text" id="catSearch" placeholder="search skill name or effect…" autocomplete="off">
+    <select id="catClass"><option value="">All classes</option></select>
+    <select id="catTrig"><option value="">All triggers</option></select>
+    <select id="catSort"><option value="cost">Sort: Cost (low→high)</option><option value="-cost">Sort: Cost (high→low)</option><option value="name">Sort: Name A–Z</option><option value="trig">Sort: Trigger</option></select>
+  </div>
+  <div class="count" id="catCount"></div>
+  <table id="catTbl"><thead><tr><th>Skill</th><th>Class</th><th>Trigger</th><th>Effect</th><th>Cost</th></tr></thead><tbody></tbody></table>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.CHAOS;
+const MARKET = 'https://chaos-agents.popularium.com/agents?agentsTab=market&name=';
+if(!D){document.getElementById('warn').style.display='block';document.getElementById('warn').textContent='Could not load data.js — keep it in the same folder as this file.';}
+
+const groups = [];
+let active = -1;
+const ELEMENTS=[...new Set((D?D.agents:[]).flatMap(a=>a.e))].sort();
+const CLASSES=[...new Set((D?D.agents:[]).flatMap(a=>a.c))].sort();
+const searchVal=()=>document.getElementById('search').value;
+
+// ---- renamed-skill aliases (same skill, different name across gens) ----
+// NOTE: Drums of War (Berserker) / Lethal Focus (Assassin) and Fog Trap
+// (Trapmaster) / Concealment (Sniper) share an effect but are SEPARATE
+// per-class skills — not renames. Do not merge them. Left empty on purpose.
+const ALIASES=[];
+const ALIAS_OF={}; ALIASES.forEach(g=>g.forEach(n=>ALIAS_OF[n]=g));
+const aliasGroup=name=>ALIAS_OF[name]||[name];
+const displayName=name=>{const g=ALIAS_OF[name]; return g?g.join(' / '):name;};
+
+// ---- favorites (persist between sessions) ----
+const FAV_KEY='chaosFavs';
+function loadFavs(){ try{return new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));}catch(e){return new Set();} }
+function saveFavs(){ try{localStorage.setItem(FAV_KEY, JSON.stringify([...favs]));}catch(e){} }
+let favs=loadFavs();
+function toggleFav(name){ if(favs.has(name))favs.delete(name); else favs.add(name); saveFavs(); updateFavCount(); render(); }
+function updateFavCount(){ const el=document.getElementById('favCount'); if(el) el.textContent=favs.size?('('+favs.size+')'):''; }
+
+function findSkill(a, name){
+  const names=aliasGroup(name);
+  for(let ci=0; ci<a.t.length; ci++){
+    const items=a.t[ci][2];
+    for(let d=0; d<items.length; d++) if(names.includes(items[d][0])) return {ci, depth:d};
+  }
+  return null;
+}
+function setCost(a, names){
+  const need={};
+  for(const nm of names){ const f=findSkill(a,nm); if(!f) return null; need[f.ci]=Math.max(need[f.ci]??-1, f.depth); }
+  let tot=0;
+  for(const ci in need){ const items=a.t[ci][2]; for(let d=0; d<=need[ci]; d++) tot+=items[d][1]; }
+  return tot;
+}
+function skillCost(a, nm){ const f=findSkill(a,nm); if(!f) return null; let t=0; const items=a.t[f.ci][2]; for(let d=0;d<=f.depth;d++) t+=items[d][1]; return t; }
+function rowMatch(a, grp){
+  let best=null;
+  for(const o of grp){
+    const f=findSkill(a,o.s); if(!f) continue;
+    if(o.mp && (f.depth+1)>o.mp) continue;
+    const c=skillCost(a,o.s);
+    if(best===null || c<best.cost) best={s:o.s, pos:f.depth+1, cost:c};
+  }
+  return best;
+}
+const activeGroups=()=>groups.filter(g=>g.length>0);
+
+function init(){
+  if(!D) return;
+  document.getElementById('meta').textContent = D.agents.length+' agents · '+(D.catalogue?D.catalogue.length:D.skills.length)+' skills · '+D.date;
+  const cf=document.getElementById('classFilter'); CLASSES.forEach(c=>cf.add(new Option(c,c)));
+  const ef=document.getElementById('elemFilter'); ELEMENTS.forEach(e=>ef.add(new Option(e,e)));
+  renderSkillList('');
+  document.getElementById('search').addEventListener('input',e=>renderSkillList(e.target.value));
+  document.getElementById('addg').addEventListener('click',()=>{ groups.push([]); active=groups.length-1; refresh(); });
+  ['favOnly','availOnly','classFilter','elemFilter'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+  // tabs
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showView(t.dataset.view)));
+  // catalogue
+  initCatalogue();
+  updateFavCount();
+}
+function showView(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.view===v));
+  document.getElementById('viewFinder').style.display = v==='finder'?'flex':'none';
+  document.getElementById('viewCatalogue').style.display = v==='catalogue'?'block':'none';
+}
+function refresh(){ renderGroups(); renderSkillList(searchVal()); render(); }
+
+function clickSkill(s){
+  for(let gi=0; gi<groups.length; gi++){
+    const j=groups[gi].findIndex(o=>o.s===s);
+    if(j>=0){ groups[gi].splice(j,1); if(groups[gi].length===0){ groups.splice(gi,1); if(active>=groups.length) active=groups.length-1; } refresh(); return; }
+  }
+  if(groups.length===0){ groups.push([]); active=0; }
+  if(active<0||active>=groups.length) active=groups.length-1;
+  groups[active].push({s,mp:null});
+  refresh();
+}
+function chosenSet(){ const s=new Set(); groups.forEach(g=>g.forEach(o=>s.add(o.s))); return s; }
+
+function renderGroups(){
+  const host=document.getElementById('groups'); host.innerHTML='';
+  groups.forEach((g,gi)=>{
+    const d=document.createElement('div'); d.className='grp'+(gi===active?' active':'');
+    d.onclick=(e)=>{ if(e.target.closest('.x')||e.target.closest('input')) return; active=gi; renderGroups(); };
+    const head=document.createElement('div'); head.className='grphead';
+    head.innerHTML='<span>Row '+(gi+1)+(gi===active?' <span class="a">· adding here</span>':'')+'</span><span class="del" title="remove row">✕ row</span>';
+    head.querySelector('.del').onclick=()=>{ groups.splice(gi,1); if(active>=groups.length) active=groups.length-1; refresh(); };
+    d.appendChild(head);
+    const chips=document.createElement('div'); chips.className='gchips';
+    if(g.length===0){ chips.innerHTML='<span class="gempty">click skills below to fill this row…</span>'; }
+    g.forEach((o,oi)=>{
+      if(oi>0){ const or=document.createElement('span'); or.className='orlab'; or.textContent='or'; chips.appendChild(or); }
+      const c=document.createElement('span'); c.className='gchip';
+      c.innerHTML='<b></b><span class="lab">≤</span><input class="mp" type="number" min="1" max="6" title="max column-depth 1-6; blank = any"><span class="x">✕</span>';
+      c.querySelector('b').textContent=displayName(o.s);
+      const inp=c.querySelector('.mp'); inp.value=o.mp||'';
+      inp.oninput=()=>{ const v=parseInt(inp.value,10); o.mp=(v>=1&&v<=6)?v:null; render(); };
+      c.querySelector('.x').onclick=()=>{ clickSkill(o.s); };
+      chips.appendChild(c);
+    });
+    d.appendChild(chips);
+    host.appendChild(d);
+  });
+}
+function renderSkillList(q){
+  q=q.toLowerCase();
+  const el=document.getElementById('sklist'); el.innerHTML='';
+  const chosen=chosenSet();
+  const shown=new Set(); let n=0;
+  for(const s of D.skills){
+    if(n>=300) break;
+    const g=aliasGroup(s), canon=g[0];
+    if(shown.has(canon)) continue;
+    if(q && !g.some(nm=>nm.toLowerCase().includes(q))) continue;
+    shown.add(canon); n++;
+    const on=g.some(nm=>chosen.has(nm));
+    const d=document.createElement('div'); d.className='skrow'+(on?' on':''); d.textContent=displayName(canon);
+    d.onclick=()=>clickSkill(canon);
+    el.appendChild(d);
+  }
+}
+function starCell(name){ return '<td class="star'+(favs.has(name)?' on':'')+'" data-fav="'+escAttr(name)+'" title="favorite">'+(favs.has(name)?'★':'☆')+'</td>'; }
+
+function render(){
+  const emptyEl=document.getElementById('empty'), tbl=document.getElementById('tbl');
+  const favOnly=document.getElementById('favOnly').checked;
+  const gs=activeGroups();
+  if(gs.length===0 && !favOnly){ emptyEl.style.display='block'; tbl.style.display='none'; document.getElementById('count').textContent=''; return; }
+  emptyEl.style.display='none'; tbl.style.display='table';
+  const availOnly=document.getElementById('availOnly').checked;
+  const cf=document.getElementById('classFilter').value, ef=document.getElementById('elemFilter').value;
+  const rows=[];
+  for(const a of D.agents){
+    if(favOnly && !favs.has(a.n)) continue;
+    if(availOnly && !a.a) continue;
+    if(cf && !a.c.includes(cf)) continue;
+    if(ef && !a.e.includes(ef)) continue;
+    let matched=[];
+    if(gs.length){
+      let ok=true;
+      for(const g of gs){ const m=rowMatch(a,g); if(!m){ok=false;break;} matched.push(m); }
+      if(!ok) continue;
+    }
+    const tot=gs.length? setCost(a, matched.map(m=>m.s)) : null;
+    rows.push({a, tot, matched});
+  }
+  if(gs.length) rows.sort((x,y)=>x.tot-y.tot); else rows.sort((x,y)=>x.a.n.localeCompare(y.a.n));
+  const thead=tbl.querySelector('thead'); thead.innerHTML='';
+  const htr=document.createElement('tr');
+  htr.innerHTML='<th>★</th><th>#</th><th>Agent</th><th>Classes</th>'+(gs.length?gs.map(g=>'<th>'+esc(g.map(o=>displayName(o.s)+(o.mp?' (≤'+o.mp+')':'')).join(' / '))+'</th>').join('')+'<th>Total SP</th>':'');
+  thead.appendChild(htr);
+  const tb=tbl.querySelector('tbody'); tb.innerHTML='';
+  rows.slice(0,500).forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=starCell(r.a.n)+'<td>'+(i+1)+'</td><td class="n"><a class="mkt" data-name="'+escAttr(r.a.n)+'" href="'+MARKET+encodeURIComponent(r.a.n)+'" target="_blank" rel="noopener">'+esc(r.a.n)+'</a>'+(r.a.a?' <span class="pill">avail</span>':'')+
+      '</td><td class="cls">'+r.a.c.join(' / ')+'</td>'+
+      (gs.length? r.matched.map(m=>'<td><span class="match">'+esc(displayName(m.s))+'</span><br>'+m.cost+'SP <span class="dep">· d'+m.pos+'</span></td>').join('')+'<td class="tot">'+r.tot+'SP</td>' : '');
+    tb.appendChild(tr);
+  });
+  document.getElementById('count').textContent=rows.length+' agents'+(gs.length?' match — cheapest first':(favOnly?' favorited':''));
+}
+function esc(s){return (''+s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function escAttr(s){return (''+s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// star + market clicks (delegated on the finder table)
+document.getElementById('tbl').addEventListener('click',e=>{
+  const star=e.target.closest('.star'); if(star){ toggleFav(star.getAttribute('data-fav')); return; }
+  const a=e.target.closest('a.mkt'); if(!a) return;
+  const nm=a.getAttribute('data-name');
+  const tmp=document.createElement('textarea'); tmp.value=nm; document.body.appendChild(tmp); tmp.select();
+  try{navigator.clipboard.writeText(nm);}catch(_){try{document.execCommand('copy');}catch(__){}}
+  tmp.remove();
+  const tag=document.createElement('span'); tag.className='copied'; tag.textContent='copied ✓';
+  a.parentNode.appendChild(tag); setTimeout(()=>tag.remove(),1500);
+});
+
+// ---- Skills Catalogue ----
+const TRIG_CLASS={"On KO":"ko","On Round Start":"rs","On Shard Collect":"shard","On Survive":"surv","Boost":"boost"};
+function initCatalogue(){
+  if(!D || !D.catalogue) return;
+  const cc=document.getElementById('catClass'); CLASSES.forEach(c=>cc.add(new Option(c,c)));
+  const ct=document.getElementById('catTrig'); [...new Set(D.catalogue.map(s=>s.tr))].sort().forEach(t=>ct.add(new Option(t,t)));
+  ['catSearch','catClass','catTrig','catSort'].forEach(id=>document.getElementById(id).addEventListener('input',renderCatalogue));
+  renderCatalogue();
+}
+function renderCatalogue(){
+  if(!D || !D.catalogue){ return; }
+  const q=document.getElementById('catSearch').value.toLowerCase();
+  const fc=document.getElementById('catClass').value, ft=document.getElementById('catTrig').value;
+  const sort=document.getElementById('catSort').value;
+  // collapse renamed aliases to one row
+  const shown=new Set(); let list=[];
+  for(const s of D.catalogue){
+    const canon=aliasGroup(s.n)[0];
+    if(canon!==s.n && D.catalogue.some(x=>x.n===canon)) continue; // skip non-canonical dupe
+    if(shown.has(canon)) continue; shown.add(canon);
+    list.push(s);
+  }
+  list=list.filter(s=>{
+    if(fc && !s.c.includes(fc)) return false;
+    if(ft && s.tr!==ft) return false;
+    if(q && !(displayName(s.n).toLowerCase().includes(q) || (s.e||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(sort==='cost') list.sort((a,b)=>a.sp-b.sp||a.n.localeCompare(b.n));
+  else if(sort==='-cost') list.sort((a,b)=>b.sp-a.sp||a.n.localeCompare(b.n));
+  else if(sort==='trig') list.sort((a,b)=>a.tr.localeCompare(b.tr)||a.sp-b.sp);
+  else list.sort((a,b)=>a.n.localeCompare(b.n));
+  const tb=document.querySelector('#catTbl tbody'); tb.innerHTML='';
+  list.forEach(s=>{
+    const tr=document.createElement('tr');
+    const tcls=TRIG_CLASS[s.tr]||'';
+    tr.innerHTML='<td class="n">'+esc(displayName(s.n))+'</td><td class="cls">'+s.c.join(' / ')+'</td>'+
+      '<td><span class="trig '+tcls+'">'+esc(s.tr)+'</span></td><td class="eff">'+esc(s.e||'')+(s.multi?' <span class="chg" title="The cache still holds a pre-patch copy of this skill. Click Refresh to update it to the current value.">stale?</span>':'')+'</td><td class="tot">'+s.sp+'SP</td>';
+    tb.appendChild(tr);
+  });
+  document.getElementById('catCount').textContent=list.length+' skills'+(q||fc||ft?' (filtered)':'');
+}
+
+// ---- live refresh (only over http via chaos_app.py) ----
+function setupRefresh(){
+  if(location.protocol!=='http:' && location.protocol!=='https:') return;
+  const panel=document.getElementById('refreshPanel');
+  const statusEl=document.getElementById('rfStatus'), tokBox=document.getElementById('rfToken');
+  const btn=document.getElementById('rfBtn'), msg=document.getElementById('rfMsg');
+  const barWrap=document.getElementById('rfBarWrap'), bar=document.getElementById('rfBar');
+  panel.style.display='block';
+  let poll=null;
+  fetch('/api/status').then(r=>r.json()).then(s=>{
+    statusEl.innerHTML = (s.hasToken?'✓ Saved token still valid — just click Refresh.':'Paste a token below to refresh (it’s remembered until it expires).')
+      + (s.date?'<br>Data: '+esc(s.date):'');
+  }).catch(()=>{ statusEl.textContent='(local server not detected)'; });
+  function stopBusy(txt){ if(poll){clearInterval(poll);poll=null;} btn.disabled=false; btn.textContent='⟳ Refresh available agents'; if(txt!=null) msg.textContent=txt; }
+  function startPolling(){
+    if(poll) clearInterval(poll);
+    poll=setInterval(async()=>{
+      try{
+        const p=await(await fetch('/api/progress')).json();
+        if(p.msg) msg.textContent=p.msg;
+        bar.style.width=(p.pct||0)+'%';
+        if(p.done){
+          if(p.ok){ msg.textContent='Updated — '+(p.summary?p.summary.available:'?')+' available. Reloading…'; bar.style.width='100%'; clearInterval(poll); poll=null; setTimeout(()=>location.reload(),600); }
+          else { stopBusy('⚠ '+(p.error||'Refresh failed.')); barWrap.style.display='none'; }
+        }
+      }catch(e){ stopBusy('⚠ Lost contact with the local server — is chaos_app.py still running?'); barWrap.style.display='none'; }
+    },700);
+  }
+  btn.onclick=async()=>{
+    const token=tokBox.value.trim();
+    btn.disabled=true; btn.textContent='⟳ Refreshing…'; msg.textContent='Starting…';
+    barWrap.style.display='block'; bar.style.width='2%';
+    try{
+      const full=document.getElementById('rfFull') && document.getElementById('rfFull').checked;
+      const r=await fetch('/api/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,full})});
+      const j=await r.json();
+      if(j.ok && j.started){ startPolling(); }
+      else { stopBusy('⚠ '+(j.error||'Refresh failed.')); barWrap.style.display='none'; }
+    }catch(e){ stopBusy('⚠ Could not reach the local server. Is chaos_app.py still running?'); barWrap.style.display='none'; }
+  };
+  tokBox.addEventListener('keydown',e=>{ if(e.key==='Enter') btn.click(); });
+}
+
+init();
+setupRefresh();
+</script>
+</body></html>
