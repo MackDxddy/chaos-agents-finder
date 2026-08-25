@@ -1,87 +1,67 @@
-# Chaos Agents - Agent Finder
+# Chaos Agents Build Finder
 
-A local tool for the Steam auto-battler **Chaos Agents**. Search every agent by the
-skills you want (sorted by cost), browse a full skills catalogue, and save your
-favorite agents. Everything runs **100% on your own computer**.
+A tool for searching any agent, available or under contract, by the skills you want.
+Filter by skills with AND/OR logic, browse a full skills catalogue, save favorites, and
+see matches sorted by build cost. It runs entirely on your own computer. Nothing is
+uploaded anywhere and it never needs your password.
 
----
+Note: this is currently built for Windows. It should run on Mac with a small launcher
+tweak.
 
-## Download
+## Setup
 
-**Just want to browse builds?** Download the zip for your system, unzip it, and
-double-click **`Chaos Agents Build Finder.html`**. No install, nothing else needed.
+1. Download the `.zip` from the [Releases](../../releases/latest) page and extract the
+   whole folder to wherever you want to keep it. Do not separate or remove any of the
+   files inside the folder.
+2. Double-click the `.bat` file. A terminal window opens and your browser launches the
+   app. Leave the terminal open while you use it.
 
-| System | Download |
-|--------|----------|
-| 🪟 **Windows** | [Chaos-Finder-Windows.zip](../../releases/latest/download/Chaos-Finder-Windows.zip) |
-| 🍎 **Mac** | [Chaos-Finder-Mac.zip](../../releases/latest/download/Chaos-Finder-Mac.zip) |
+### Get your login token
 
-> If the links above don't work yet, click the **Releases** link on the right-hand
-> side of this page and download the zip from there.
+You need to do this about once every two days.
 
----
+3. Go to https://chaos-agents.popularium.com/agents?agentsTab=market
+4. Right-click anywhere and choose Inspect.
+5. Select the Network tab and refresh the page.
+6. Find a GET response like the one below and click it.
 
-## What you get
+   ![Find the GET request](images/find-request.png)
 
-- **Build Finder** — add requirement rows (each row is a must-have; put two skills in
-  one row to mean "either of these"). Matching agents are listed cheapest-first, with
-  the SP cost and column-depth of each skill.
-- **Skills Catalogue** — every skill in the game, filterable by class, trigger type,
-  and cost.
-- **Favorites** — star any agent; your list is remembered between sessions.
-- **Live Refresh** (optional) — pull the latest agents and current skill values from
-  your own game account with one click.
+7. In the Headers, find your Authorization token and copy it. Do not copy the word
+   "Bearer", just the token itself.
 
----
+   ![Copy the token from the Authorization header](images/copy-token.png)
 
-## Two ways to run it
+8. Paste the token into the login token box in the app and click Refresh available
+   agents. It runs for a bit, and you can watch the progress in the terminal window.
 
-**1. Browse only (no install).** Double-click **`Chaos Agents Build Finder.html`**.
-It's a single self-contained file — it opens in your web browser and works offline.
+## Using the finder
 
-**2. With the live "Refresh" button (needs Python).**
+On the left, click Add another requirement to add a skill you want to include. This is
+how the AND/OR logic works. Put multiple skills in the same requirement to match an
+agent that has any one of them (OR). Click Add another requirement to start a new bucket,
+and the agent has to satisfy every bucket (AND).
 
-1. Install Python from <https://www.python.org/downloads/>
-   - Windows: tick **"Add Python to PATH"** on the first install screen.
-   - Mac: recent macOS doesn't include Python; install it from the same link.
-2. Start it:
-   - Windows: double-click **`Start Chaos Finder.bat`**
-   - Mac: double-click **`Start Chaos Finder.command`** (first time: right-click → Open
-     to get past the "unidentified developer" warning)
-3. Set up the one-time token bookmarklet — see **`Copy Chaos Token (bookmarklet).txt`**.
-4. On the game site (logged in), click the "Copy Chaos token" bookmarklet, paste the
-   token into the box in the app, and click **Refresh**.
+You can set a max position per skill, so a skill only counts if it sits at that
+column-depth or shallower.
 
-The refresh uses **your** game account, so availability reflects your own agents. Your
-token is stored only on your computer and never leaves it.
+The results always sort by total build cost.
 
----
+Underneath the skills you can filter by favorites, only available agents, skills, or
+classes.
 
-## After a game balance patch
+To view an agent, click its name, then press Ctrl + V to paste the name into the game's
+search box.
 
-Just click **Refresh** normally. Because a skill's value is the same on every agent,
-each refresh re-reads a small covering set of agents (about a dozen) that together
-contain every skill, and updates the Skills Catalogue to the current numbers
-automatically — no slow full re-download needed. The "Full refresh" checkbox is only a
-rarely-needed hard reset.
+To see every skill in one place, select Skills Catalogue at the top. You can filter it
+by class, trigger, and cost.
 
----
+## Notes
 
-## Privacy & safety
+Keep all the files in the folder together. The app loads its data from the other files
+next to it.
 
-- Runs entirely locally. No account, no server, no uploads.
-- Your login token is stored only on your machine (in a file the download never
-  includes) and is used only to talk to the game's own API.
-- The included data snapshot contains game/agent information only — no credentials.
+Your token is stored only on your computer and is used only to talk to the game's own
+API. It never leaves your machine, and it is not included in the download.
 
----
-
-## For developers
-
-- `chaos_tool.html` — the app (UI + logic), loads its data from `data.js`.
-- `chaos_app.py` — a tiny local server (Python standard library only) that serves the
-  app and handles the Refresh (scrapes the game's authenticated API from your machine).
-- `data.js` — the current data snapshot (`window.CHAOS = {...}`).
-- The skill cache (`agents_skillmaps.json`, `agents_meta.json`) and your token
-  (`.chaos_token`) are generated locally and are **not** committed — see `.gitignore`.
-  They're bundled inside the release zips so the download works out of the box.
+After a game balance patch, click Refresh again and the skill values update.
