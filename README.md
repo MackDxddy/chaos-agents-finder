@@ -26,8 +26,6 @@ tweak.
 
 ### Get your login token
 
-You need to do this about once every two days.
-
 3. Go to https://chaos-agents.popularium.com/agents?agentsTab=market
 4. Right-click anywhere and choose Inspect.
 5. Select the Network tab and refresh the page.
