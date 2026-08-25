@@ -1,9 +1,8 @@
-# Chaos Agents — Build Finder
+# Chaos Agents - Agent Finder
 
 A local tool for the Steam auto-battler **Chaos Agents**. Search every agent by the
-skills you want (sorted by SP cost), browse a full skills catalogue, and save your
-favorite agents. Everything runs **100% on your own computer** — nothing is uploaded
-anywhere, and it never needs your password.
+skills you want (sorted by cost), browse a full skills catalogue, and save your
+favorite agents. Everything runs **100% on your own computer**.
 
 ---
 
