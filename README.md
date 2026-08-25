@@ -15,8 +15,6 @@ tweak.
 | Windows | [Chaos-Finder-Windows.zip](../../releases/latest/download/Chaos-Finder-Windows.zip) |
 | Mac | [Chaos-Finder-Mac.zip](../../releases/latest/download/Chaos-Finder-Mac.zip) |
 
-If the links above do not work yet, click the [Releases](../../releases/latest) link on
-the right side of this page and download the zip from there.
 
 ## Setup
 
