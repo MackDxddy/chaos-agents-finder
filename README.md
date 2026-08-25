@@ -5,8 +5,6 @@ Filter by skills with AND/OR logic, browse a full skills catalogue, save favorit
 see matches sorted by build cost. It runs entirely on your own computer. Nothing is
 uploaded anywhere and it never needs your password.
 
-Note: this is currently built for Windows. It should run on Mac with a small launcher
-tweak.
 
 ## Download
 
@@ -15,31 +13,44 @@ tweak.
 | Windows | [Chaos-Finder-Windows.zip](../../releases/latest/download/Chaos-Finder-Windows.zip) |
 | Mac | [Chaos-Finder-Mac.zip](../../releases/latest/download/Chaos-Finder-Mac.zip) |
 
+## Install Python first
+
+The app needs Python to run. Do this once, before anything else.
+
+1. Go to https://www.python.org/downloads/ and download Python 3.14 for Windows.
+2. Open the installer. On the very first screen, check the box that says
+   **Add python.exe to PATH** at the bottom. This step is easy to miss and the app
+   will not start without it.
+3. Click Install Now and let it finish.
+4. To confirm it worked, open the Start menu, type `cmd`, open Command Prompt, type
+   `python --version`, and press Enter. You should see `Python 3.14.x`. If you instead
+   see an error or the Microsoft Store opens, Python was not added to PATH. Re-run the
+   installer, choose Modify, and make sure Add to PATH is checked.
 
 ## Setup
 
-1. Download the `.zip` from the [Releases](../../releases/latest) page and extract the
+5. Download the `.zip` from the [Releases](../../releases/latest) page and extract the
    whole folder to wherever you want to keep it. Do not separate or remove any of the
    files inside the folder.
-2. Double-click the `.bat` file. A terminal window opens and your browser launches the
+6. Double-click the `.bat` file. A terminal window opens and your browser launches the
    app. Leave the terminal open while you use it.
 
 ### Get your login token
 
-3. Go to https://chaos-agents.popularium.com/agents?agentsTab=market
-4. Right-click anywhere and choose Inspect.
-5. Select the Network tab and refresh the page.
-6. Find a GET response like the one below and click it.
+7. Go to https://chaos-agents.popularium.com/agents?agentsTab=market
+8. Right-click anywhere and choose Inspect.
+9. Select the Network tab and refresh the page.
+10. Find a GET response like the one below and click it.
 
-   ![Find the GET request](images/find-request.png)
+    ![Find the GET request](images/find-request.png)
 
-7. In the Headers, find your Authorization token and copy it. Do not copy the word
-   "Bearer", just the token itself.
+11. In the Headers, find your Authorization token and copy it. Do not copy the word
+    "Bearer", just the token itself.
 
-   ![Copy the token from the Authorization header](images/copy-token.png)
+    ![Copy the token from the Authorization header](images/copy-token.png)
 
-8. Paste the token into the login token box in the app and click Refresh available
-   agents. It runs for a bit, and you can watch the progress in the terminal window.
+12. Paste the token into the login token box in the app and click Refresh available
+    agents. It runs for a bit, and you can watch the progress in the terminal window.
 
 ## Using the finder
 
