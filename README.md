@@ -8,6 +8,16 @@ uploaded anywhere and it never needs your password.
 Note: this is currently built for Windows. It should run on Mac with a small launcher
 tweak.
 
+## Download
+
+| System | Download |
+|--------|----------|
+| Windows | [Chaos-Finder-Windows.zip](../../releases/latest/download/Chaos-Finder-Windows.zip) |
+| Mac | [Chaos-Finder-Mac.zip](../../releases/latest/download/Chaos-Finder-Mac.zip) |
+
+If the links above do not work yet, click the [Releases](../../releases/latest) link on
+the right side of this page and download the zip from there.
+
 ## Setup
 
 1. Download the `.zip` from the [Releases](../../releases/latest) page and extract the
