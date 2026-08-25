@@ -17,7 +17,7 @@ uploaded anywhere and it never needs your password.
 
 The app needs Python to run. Do this once, before anything else.
 
-1. Go to https://www.python.org/downloads/ and download Python 3.14 for Windows.
+1. Go to https://www.python.org/downloads/ and download Python 3.14 for Windows (or Mac).
 2. Open the installer. On the very first screen, check the box that says
    **Add python.exe to PATH** at the bottom. This step is easy to miss and the app
    will not start without it.
