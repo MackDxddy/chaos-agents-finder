@@ -41,12 +41,15 @@ The app needs Python to run. Do this once, before anything else.
 8. Right-click anywhere and choose Inspect.
 9. Select the Network tab and refresh the page.
 10. For Chrome users, look for a "XHR" type response such as "for-join" or "for-start". Select this item.
+![Chrome XHR response](images/chrome_XHR.png)
 For Firefox users, look for a "JSON" response like "for-join" or "for-start". Select this item.
-
+![Firefox JSON response](images/firefox_json.png)
 11. In the Headers, find your Authorization token and copy it. Do not copy the word
     "Bearer", just the token itself.
 
-    ![Copy the token from the Authorization header](images/copy-token.png)
+![Copy the token from the Authorization header](images/chrome_headers.png)
+
+![Copy the token from the Authorization header](images/firefox_headers.png)
 
 12. Paste the token into the login token box in the app and click Refresh available
     agents. It runs for a bit, and you can watch the progress in the terminal window.
