@@ -1,0 +1,46 @@
+COPY CHAOS TOKEN — one-click bookmarklet
+========================================
+
+This gives you a button in your browser's bookmarks bar. When you're on the
+Chaos Agents site and logged in, clicking it copies your login token to the
+clipboard. Then you just paste it into update_app.py when it asks.
+
+No more saving HAR files.
+
+
+-------------------------------------------------------------------
+STEP 1 — Make the bookmark (one time only)
+-------------------------------------------------------------------
+1. Show your bookmarks bar if it's hidden:
+     Chrome / Edge:  Ctrl+Shift+B  (Mac: Cmd+Shift+B)
+     Firefox:        Ctrl+Shift+B
+2. Right-click the bookmarks bar -> "Add page" / "Add bookmark".
+3. Name it:  Copy Chaos token
+4. In the URL / Location box, DELETE whatever is there and paste the ENTIRE
+   line below (it must start with  javascript: ):
+
+javascript:(function(){function j(s){return typeof s==='string'&&/^ey[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(s);}function x(t){try{var p=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(atob(p)).exp||0;}catch(e){return 0;}}var f=[];function s(v){if(j(v)){f.push(v);return;}try{(function w(o){if(typeof o==='string'){if(j(o))f.push(o);}else if(o&&typeof o==='object'){for(var k in o)w(o[k]);}})(JSON.parse(v));}catch(e){}}[localStorage,sessionStorage].forEach(function(st){for(var i=0;i<st.length;i++)s(st.getItem(st.key(i)));});f=f.filter(function(t){return x(t)>Date.now()/1000;});if(!f.length){alert('No login token found here. Make sure you are logged in at chaos-agents.popularium.com, then click again. If it still fails, use the HAR method.');return;}f.sort(function(a,b){return x(b)-x(a);});navigator.clipboard.writeText(f[0]).then(function(){alert('Chaos token copied! Now run update_app.py and paste it.');},function(){prompt('Copy this token:',f[0]);});})();
+
+5. Save.
+
+
+-------------------------------------------------------------------
+STEP 2 — Use it (each time you want to refresh the list)
+-------------------------------------------------------------------
+1. Go to  https://chaos-agents.popularium.com  and make sure you're logged in.
+2. Click the "Copy Chaos token" bookmark. You should see
+   "Chaos token copied!"
+3. Run the updater:  python update_app.py
+4. When it says "Paste token and press Enter", paste (Ctrl+V) and hit Enter.
+5. Done — data.js is refreshed. Reopen chaos_tool.html.
+
+Tokens last about 2 days, so just click the bookmark again whenever the
+updater says the token looks expired.
+
+
+-------------------------------------------------------------------
+If the bookmarklet ever says it can't find a token
+-------------------------------------------------------------------
+Fall back to the old way: on the site press F12 -> Network -> reload the page
+-> "Save All As HAR" into your Downloads folder, then run update_app.py (it
+auto-finds the newest HAR). Either method works.
