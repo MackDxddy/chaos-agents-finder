@@ -37,12 +37,11 @@ The app needs Python to run. Do this once, before anything else.
 
 ### Get your login token
 
-7. Go to https://chaos-agents.popularium.com/agents?agentsTab=market
+7. Go to https://chaos-agents.popularium.com/home
 8. Right-click anywhere and choose Inspect.
 9. Select the Network tab and refresh the page.
-10. Find a GET response like the one below and click it.
-
-    ![Find the GET request](images/find-request.png)
+10. For Chrome users, look for a "XHR" type response such as "for-join" or "for-start". Select this item.
+For Firefox users, look for a "JSON" response like "for-join" or "for-start". Select this item.
 
 11. In the Headers, find your Authorization token and copy it. Do not copy the word
     "Bearer", just the token itself.
